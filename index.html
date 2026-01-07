@@ -243,17 +243,52 @@ async function salvarNoRanking(nome, pontos) {
     }
 }
 
-    async function atualizarTabelaRanking() {
-        try {
-            const res = await fetch(URL_GOOGLE_SCRIPT);
-            const ranking = await res.json();
-            const tbody = document.querySelector('#tabelaRanking tbody');
-            tbody.innerHTML = "";
-            ranking.forEach(item => {
-                tbody.innerHTML += `<tr><td>${item[0]}</td><td>${item[1]} pts</td></tr>`;
-            });
-        } catch (e) { console.log("Ranking ainda vazio ou erro de conexão."); }
+async function atualizarTabelaRanking() {
+    try {
+        const res = await fetch(URL_GOOGLE_SCRIPT);
+        const dadosBrutos = await res.json();
+        const tbody = document.querySelector('#tabelaRanking tbody');
+        
+        tbody.innerHTML = ""; 
+
+        if (!dadosBrutos || dadosBrutos.length === 0) {
+            tbody.innerHTML = "<tr><td colspan='2'>Nenhuma pontuação ainda.</td></tr>";
+            return;
+        }
+
+        // --- LÓGICA DE SOMA NO CLIENTE (HTML) ---
+        const rancingAgrupado = {};
+
+        dadosBrutos.forEach(item => {
+            // item[0] é o nome, item[1] é a pontuação
+            let nome = item[0].toString().trim();
+            let pontos = parseInt(item[1]) || 0;
+
+            // Padroniza para a chave do objeto (ex: "Gabriel" e "gabriel" viram a mesma chave)
+            let chave = nome.toLowerCase();
+
+            if (rancingAgrupado[chave]) {
+                rancingAgrupado[chave].pontos += pontos;
+            } else {
+                rancingAgrupado[chave] = { nome: nome, pontos: pontos };
+            }
+        });
+
+        // Converte o objeto de volta para um array para poder ordenar
+        const rankingFinal = Object.values(rancingAgrupado);
+
+        // Ordena do maior para o menor
+        rankingFinal.sort((a, b) => b.pontos - a.pontos);
+
+        // Exibe apenas os 10 melhores
+        rankingFinal.slice(0, 10).forEach(item => {
+            tbody.innerHTML += `<tr><td>${item.nome}</td><td>${item.pontos} pts</td></tr>`;
+        });
+
+    } catch (e) { 
+        console.log("Erro ao processar ranking visual:", e); 
     }
+}
 
     // Garante que as perguntas apareçam
     window.onload = iniciarQuiz;
