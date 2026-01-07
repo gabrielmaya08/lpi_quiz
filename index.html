@@ -220,21 +220,34 @@
         salvarNoRanking(nome, pontos);
     }
 
-    function salvarNoRanking(nome, pontos) {
-        let ranking = JSON.parse(localStorage.getItem('rankingLPI')) || [];
-        ranking.push({ nome, pontos });
-        ranking.sort((a, b) => b.pontos - a.pontos);
-        localStorage.setItem('rankingLPI', JSON.stringify(ranking.slice(0, 5)));
-        atualizarTabelaRanking();
-    }
+const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwL_7_XW1WhImX-9jpJ6JJ81kQMC3dgGWShTAKkVBgugtiaj2ve81NplJDuTN1k0_uNnw/exec";
 
-    function atualizarTabelaRanking() {
-        const ranking = JSON.parse(localStorage.getItem('rankingLPI')) || [];
+async function salvarNoRanking(nome, pontos) {
+    // Envia os dados para a planilha
+    await fetch(URL_GOOGLE_SCRIPT, {
+        method: "POST",
+        body: JSON.stringify({ nome: nome, pontos: pontos })
+    });
+    
+    // Atualiza a tabela após salvar
+    atualizarTabelaRanking();
+}
+
+async function atualizarTabelaRanking() {
+    try {
+        const response = await fetch(URL_GOOGLE_SCRIPT);
+        const ranking = await response.json();
+        
         const tbody = document.querySelector('#tabelaRanking tbody');
         tbody.innerHTML = "";
+        
         ranking.forEach(item => {
-            tbody.innerHTML += `<tr><td>${item.nome}</td><td>${item.pontos} pts</td></tr>`;
+            tbody.innerHTML += `<tr><td>${item[0]}</td><td>${item[1]} pts</td></tr>`;
         });
+    } catch (error) {
+        console.error("Erro ao carregar ranking:", error);
+    }
+}
     }
 
     iniciarQuiz();
