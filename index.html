@@ -3,105 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz LPI - 10 Minutos</title>
+    <title>Quiz LPI - Simulado</title>
     <style>
-        :root {
-            --cor-primaria: #8e44ad; /* Roxo principal */
-            --cor-fundo: #f3e5f5;    /* Lilás bem claro */
-            --cor-card: #ffffff;
-        }
-
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: var(--cor-fundo); 
-            color: #333; 
-            padding: 20px; 
-            margin: 0;
-        }
-
-        .container { 
-            max-width: 800px; 
-            margin: auto; 
-            background: var(--cor-card); 
-            padding: 30px; 
-            border-radius: 15px; 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1); 
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 3px solid var(--cor-primaria);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-        }
-
+        :root { --cor-primaria: #8e44ad; --cor-fundo: #f3e5f5; --cor-card: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--cor-fundo); padding: 20px; margin: 0; }
+        .container { max-width: 800px; margin: auto; background: var(--cor-card); padding: 30px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--cor-primaria); margin-bottom: 20px; padding-bottom: 10px; }
         h1 { color: var(--cor-primaria); margin: 0; font-size: 24px; }
-
-        #timer {
-            font-size: 20px;
-            font-weight: bold;
-            color: #e74c3c;
-            background: #ffebee;
-            padding: 5px 15px;
-            border-radius: 20px;
-            border: 2px solid #e74c3c;
-        }
-
-        .pergunta { 
-            margin-bottom: 20px; 
-            padding: 15px; 
-            border-radius: 8px; 
-            background: #fdfbff;
-            border: 1px solid #e1bee7;
-        }
-
+        #timer { font-size: 20px; font-weight: bold; color: #e74c3c; background: #ffebee; padding: 5px 15px; border-radius: 20px; border: 2px solid #e74c3c; }
+        .pergunta { margin-bottom: 20px; padding: 15px; border-radius: 8px; background: #fdfbff; border: 1px solid #e1bee7; }
         .pergunta p { font-weight: bold; margin-bottom: 12px; color: #4a148c; }
-
-        label { 
-            display: block; 
-            margin-bottom: 10px; 
-            cursor: pointer; 
-            padding: 8px; 
-            border-radius: 5px; 
-            border: 1px solid transparent;
-        }
-
-        label:hover { background-color: #f3e5f5; border-color: #d1c4e9; }
-
-        .btn { 
-            width: 100%; 
-            padding: 15px; 
-            background: var(--cor-primaria); 
-            color: white; 
-            border: none; 
-            border-radius: 8px; 
-            font-size: 18px; 
-            font-weight: bold;
-            cursor: pointer; 
-            transition: 0.3s;
-        }
-
-        .btn:hover { background: #732d91; transform: translateY(-2px); }
-
-        #resultado { 
-            margin-top: 20px; 
-            padding: 20px; 
-            text-align: center; 
-            font-size: 22px; 
-            border-radius: 10px; 
-            display: none; 
-        }
-
+        label { display: block; margin-bottom: 10px; cursor: pointer; padding: 8px; border-radius: 5px; }
+        label:hover { background-color: #f3e5f5; }
+        .btn { width: 100%; padding: 15px; background: var(--cor-primaria); color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        #resultado { margin-top: 20px; padding: 20px; text-align: center; font-size: 22px; border-radius: 10px; display: none; }
         .ranking { margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; border: 1px solid #eee; text-align: left; }
         th { background-color: var(--cor-primaria); color: white; }
-
-        input[type="text"] {
-            width: 100%; padding: 12px; margin-bottom: 20px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box;
-        }
+        input[type="text"] { width: 100%; padding: 12px; margin-bottom: 20px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -120,14 +40,13 @@
     <div id="quiz-container"></div>
     
     <button class="btn" id="btnFinalizar" onclick="finalizarQuiz()">Finalizar Simulado</button>
-
     <div id="resultado"></div>
 
     <div class="ranking">
-        <h3>🏆 Melhores Pontuações (Ranking Global)</h3>
+        <h3>🏆 Melhores Pontuações (Global)</h3>
         <table id="tabelaRanking">
             <thead><tr><th>Candidato</th><th>Pontos</th></tr></thead>
-            <tbody></tbody>
+            <tbody><tr><td colspan="2">Carregando ranking...</td></tr></tbody>
         </table>
     </div>
 </div>
@@ -135,6 +54,7 @@
 <script>
     const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwL_7_XW1WhImX-9jpJ6JJ81kQMC3dgGWShTAKkVBgugtiaj2ve81NplJDuTN1k0_uNnw/exec";
 
+    // Banco de dados completo
     const bancoDePerguntas = [
         { q: "Qual comando exibe o diretório atual?", options: ["ls", "pwd", "cd", "dir"], correct: 1 },
         { q: "Qual diretório contém arquivos essenciais do sistema?", options: ["/home", "/opt", "/etc", "/var"], correct: 2 },
@@ -248,10 +168,8 @@
             let segundos = tempoRestante % 60;
             segundos = segundos < 10 ? '0' + segundos : segundos;
             document.getElementById('timer').innerHTML = `${minutos}:${segundos}`;
-            
             if (tempoRestante <= 0) {
                 clearInterval(intervaloTimer);
-                alert("O tempo acabou!");
                 finalizarQuiz(true);
             }
             tempoRestante--;
@@ -262,10 +180,8 @@
         perguntasSorteadas = bancoDePerguntas.sort(() => 0.5 - Math.random()).slice(0, 10);
         const container = document.getElementById('quiz-container');
         container.innerHTML = "";
-        
         perguntasSorteadas.forEach((p, index) => {
-            let html = `<div class="pergunta">
-                <p>${index + 1}. ${p.q}</p>`;
+            let html = `<div class="pergunta"><p>${index + 1}. ${p.q}</p>`;
             p.options.forEach((opt, i) => {
                 html += `<label><input type="radio" name="p${index}" value="${i}"> ${opt}</label>`;
             });
@@ -290,52 +206,46 @@
         });
 
         if (!forcado && respondidas < 10) {
-            alert("Responda todas as perguntas!");
+            alert("Por favor, responda todas as questões!");
             return;
         }
 
         clearInterval(intervaloTimer);
-        document.getElementById('btnFinalizar').disabled = true;
-        document.getElementById('btnFinalizar').innerText = "Enviando...";
-        
-        const resDiv = document.getElementById('resultado');
-        resDiv.style.display = "block";
-        resDiv.innerHTML = `<h3>Resultado</h3><p>${nome}, você fez ${pontos} pontos!</p>`;
-        resDiv.style.backgroundColor = pontos >= 70 ? "#d4edda" : "#f8d7da";
+        const btn = document.getElementById('btnFinalizar');
+        btn.disabled = true;
+        btn.innerText = "Salvando...";
 
         await salvarNoRanking(nome, pontos);
-        document.getElementById('btnFinalizar').style.display = "none";
+        
+        document.getElementById('resultado').style.display = "block";
+        document.getElementById('resultado').innerHTML = `<h3>Fim!</h3><p>${nome}, sua nota: ${pontos} pts</p>`;
+        btn.style.display = "none";
     }
 
     async function salvarNoRanking(nome, pontos) {
         try {
             await fetch(URL_GOOGLE_SCRIPT, {
                 method: "POST",
-                mode: "no-cors", // Necessário para o Google Apps Script
-                headers: { "Content-Type": "application/json" },
+                mode: "no-cors",
                 body: JSON.stringify({ nome: nome, pontos: pontos })
             });
-            // Como usamos no-cors, não temos resposta, aguardamos um pouco antes de atualizar
-            setTimeout(atualizarTabelaRanking, 2000);
-        } catch (e) {
-            console.error(e);
-        }
+            setTimeout(atualizarTabelaRanking, 1500);
+        } catch (e) { console.error(e); }
     }
 
     async function atualizarTabelaRanking() {
         try {
-            const response = await fetch(URL_GOOGLE_SCRIPT);
-            const ranking = await response.json();
+            const res = await fetch(URL_GOOGLE_SCRIPT);
+            const ranking = await res.json();
             const tbody = document.querySelector('#tabelaRanking tbody');
             tbody.innerHTML = "";
             ranking.forEach(item => {
                 tbody.innerHTML += `<tr><td>${item[0]}</td><td>${item[1]} pts</td></tr>`;
             });
-        } catch (error) {
-            console.error("Erro ao carregar ranking:", error);
-        }
+        } catch (e) { console.log("Ranking ainda vazio ou erro de conexão."); }
     }
 
+    // Garante que as perguntas apareçam
     window.onload = iniciarQuiz;
 </script>
 </body>
