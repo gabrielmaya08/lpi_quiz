@@ -43,7 +43,7 @@
     <div id="resultado"></div>
 
     <div class="ranking">
-        <h3>🏆 Melhores Pontuações (Global)</h3>
+        <h3>🏆 Melhores Pontuações (Ranking Global)</h3>
         <table id="tabelaRanking">
             <thead><tr><th>Candidato</th><th>Pontos</th></tr></thead>
             <tbody><tr><td colspan="2">Carregando ranking...</td></tr></tbody>
@@ -54,7 +54,7 @@
 <script>
     const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwL_7_XW1WhImX-9jpJ6JJ81kQMC3dgGWShTAKkVBgugtiaj2ve81NplJDuTN1k0_uNnw/exec";
 
-    // Banco de dados completo
+    // O banco de perguntas permanece o mesmo...
     const bancoDePerguntas = [
         { q: "Qual comando exibe o diretório atual?", options: ["ls", "pwd", "cd", "dir"], correct: 1 },
         { q: "Qual diretório contém arquivos essenciais do sistema?", options: ["/home", "/opt", "/etc", "/var"], correct: 2 },
@@ -159,7 +159,7 @@
     ];
 
     let perguntasSorteadas = [];
-    let tempoRestante = 600; 
+    let tempoRestante = 600;
     let intervaloTimer;
 
     function iniciarTimer() {
@@ -193,7 +193,8 @@
     }
 
     async function finalizarQuiz(forcado = false) {
-        const nome = document.getElementById('nomeUsuario').value || "Anônimo";
+        const nomeOriginal = document.getElementById('nomeUsuario').value.trim();
+        const nome = nomeOriginal || "Anônimo";
         let pontos = 0;
         let respondidas = 0;
 
@@ -222,75 +223,72 @@
         btn.style.display = "none";
     }
 
-async function salvarNoRanking(nome, pontos) {
-    try {
-        // Desativa o botão e limpa a tabela localmente para evitar confusão visual
-        const tbody = document.querySelector('#tabelaRanking tbody');
-        tbody.innerHTML = "<tr><td colspan='2'>Atualizando ranking global...</td></tr>";
+    async function salvarNoRanking(nome, pontos) {
+        try {
+            const tbody = document.querySelector('#tabelaRanking tbody');
+            tbody.innerHTML = "<tr><td colspan='2'>Sincronizando dados...</td></tr>";
 
-        await fetch(URL_GOOGLE_SCRIPT, {
-            method: "POST",
-            mode: "no-cors",
-            body: JSON.stringify({ nome: nome, pontos: pontos })
-        });
-        
-        // Aguarda 2.5 segundos para o Google terminar de somar os valores
-        setTimeout(() => {
-            atualizarTabelaRanking();
-        }, 2500);
-    } catch (e) { 
-        console.error("Erro ao salvar:", e); 
-    }
-}
-
-async function atualizarTabelaRanking() {
-    try {
-        const res = await fetch(URL_GOOGLE_SCRIPT);
-        const dadosBrutos = await res.json();
-        const tbody = document.querySelector('#tabelaRanking tbody');
-        
-        tbody.innerHTML = ""; 
-
-        if (!dadosBrutos || dadosBrutos.length === 0) {
-            tbody.innerHTML = "<tr><td colspan='2'>Nenhuma pontuação ainda.</td></tr>";
-            return;
+            await fetch(URL_GOOGLE_SCRIPT, {
+                method: "POST",
+                mode: "no-cors",
+                body: JSON.stringify({ nome: nome, pontos: pontos })
+            });
+            
+            setTimeout(() => {
+                atualizarTabelaRanking();
+            }, 2500);
+        } catch (e) {
+            console.error("Erro ao salvar:", e);
         }
-
-        // --- LÓGICA DE SOMA NO CLIENTE (HTML) ---
-        const rancingAgrupado = {};
-
-        dadosBrutos.forEach(item => {
-            // item[0] é o nome, item[1] é a pontuação
-            let nome = item[0].toString().trim();
-            let pontos = parseInt(item[1]) || 0;
-
-            // Padroniza para a chave do objeto (ex: "Gabriel" e "gabriel" viram a mesma chave)
-            let chave = nome.toLowerCase();
-
-            if (rancingAgrupado[chave]) {
-                rancingAgrupado[chave].pontos += pontos;
-            } else {
-                rancingAgrupado[chave] = { nome: nome, pontos: pontos };
-            }
-        });
-
-        // Converte o objeto de volta para um array para poder ordenar
-        const rankingFinal = Object.values(rancingAgrupado);
-
-        // Ordena do maior para o menor
-        rankingFinal.sort((a, b) => b.pontos - a.pontos);
-
-        // Exibe apenas os 10 melhores
-        rankingFinal.slice(0, 10).forEach(item => {
-            tbody.innerHTML += `<tr><td>${item.nome}</td><td>${item.pontos} pts</td></tr>`;
-        });
-
-    } catch (e) { 
-        console.log("Erro ao processar ranking visual:", e); 
     }
-}
 
-    // Garante que as perguntas apareçam
+    async function atualizarTabelaRanking() {
+        try {
+            const res = await fetch(URL_GOOGLE_SCRIPT);
+            const dadosBrutos = await res.json();
+            const tbody = document.querySelector('#tabelaRanking tbody');
+            
+            tbody.innerHTML = ""; 
+
+            if (!dadosBrutos || dadosBrutos.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='2'>Nenhuma pontuação registrada.</td></tr>";
+                return;
+            }
+
+            // --- LÓGICA DE AGRUPAMENTO TOTAL ---
+            const rankingAgrupado = {};
+
+            dadosBrutos.forEach(item => {
+                if (item && item.length >= 2) {
+                    let nomeOriginal = item[0].toString().trim();
+                    let pontos = parseInt(item[1]) || 0;
+
+                    // Criamos uma chave minúscula para evitar duplicados como "Gabriel" e "gabriel"
+                    let chave = nomeOriginal.toLowerCase();
+
+                    if (rankingAgrupado[chave]) {
+                        rankingAgrupado[chave].pontos += pontos;
+                    } else {
+                        // Mantemos o nome original (com maiúscula) para exibição
+                        rankingAgrupado[chave] = { nome: nomeOriginal, pontos: pontos };
+                    }
+                }
+            });
+
+            // Converte o objeto de volta para array e ordena
+            const rankingFinal = Object.values(rankingAgrupado);
+            rankingFinal.sort((a, b) => b.pontos - a.pontos);
+
+            // Exibe o Top 10 consolidado
+            rankingFinal.slice(0, 10).forEach(item => {
+                tbody.innerHTML += `<tr><td>${item.nome}</td><td>${item.pontos} pts</td></tr>`;
+            });
+
+        } catch (e) { 
+            console.log("Erro ao carregar ranking:", e); 
+        }
+    }
+
     window.onload = iniciarQuiz;
 </script>
 </body>
