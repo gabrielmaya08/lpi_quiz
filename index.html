@@ -222,16 +222,26 @@
         btn.style.display = "none";
     }
 
-    async function salvarNoRanking(nome, pontos) {
-        try {
-            await fetch(URL_GOOGLE_SCRIPT, {
-                method: "POST",
-                mode: "no-cors",
-                body: JSON.stringify({ nome: nome, pontos: pontos })
-            });
-            setTimeout(atualizarTabelaRanking, 1500);
-        } catch (e) { console.error(e); }
+async function salvarNoRanking(nome, pontos) {
+    try {
+        // Desativa o botão e limpa a tabela localmente para evitar confusão visual
+        const tbody = document.querySelector('#tabelaRanking tbody');
+        tbody.innerHTML = "<tr><td colspan='2'>Atualizando ranking global...</td></tr>";
+
+        await fetch(URL_GOOGLE_SCRIPT, {
+            method: "POST",
+            mode: "no-cors",
+            body: JSON.stringify({ nome: nome, pontos: pontos })
+        });
+        
+        // Aguarda 2.5 segundos para o Google terminar de somar os valores
+        setTimeout(() => {
+            atualizarTabelaRanking();
+        }, 2500);
+    } catch (e) { 
+        console.error("Erro ao salvar:", e); 
     }
+}
 
     async function atualizarTabelaRanking() {
         try {
