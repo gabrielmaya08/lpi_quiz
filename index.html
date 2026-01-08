@@ -1,208 +1,121 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz LPI - Simulado Dinâmico</title>
-    <style>
-        :root { --cor-primaria: #8e44ad; --cor-fundo: #f3e5f5; --cor-card: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--cor-fundo); padding: 20px; margin: 0; }
-        .container { max-width: 800px; margin: auto; background: var(--cor-card); padding: 30px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--cor-primaria); margin-bottom: 20px; padding-bottom: 10px; }
-        h1 { color: var(--cor-primaria); margin: 0; font-size: 24px; }
-        #timer { font-size: 20px; font-weight: bold; color: #e74c3c; background: #ffebee; padding: 5px 15px; border-radius: 20px; border: 2px solid #e74c3c; }
-        .pergunta { margin-bottom: 20px; padding: 15px; border-radius: 8px; background: #fdfbff; border: 1px solid #e1bee7; }
-        .pergunta p { font-weight: bold; margin-bottom: 12px; color: #4a148c; }
-        label { display: block; margin-bottom: 10px; cursor: pointer; padding: 8px; border-radius: 5px; transition: 0.2s; }
-        label:hover { background-color: #f3e5f5; }
-        .btn { width: 100%; padding: 15px; background: var(--cor-primaria); color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
-        .btn:disabled { background: #ccc; cursor: not-allowed; }
-        #resultado { margin-top: 20px; padding: 20px; text-align: center; font-size: 22px; border-radius: 10px; display: none; background: #e8f5e9; color: #2e7d32; }
-        .ranking { margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px; border: 1px solid #eee; text-align: left; }
-        th { background-color: var(--cor-primaria); color: white; }
-        input[type="text"] { width: 100%; padding: 12px; margin-bottom: 20px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz LPI - Simulado</title>
+<style>
+:root { --p: #8e44ad; --f: #f3e5f5; --c: #ffffff; }
+body { font-family: sans-serif; background: var(--f); padding: 20px; margin: 0; }
+.container { max-width: 800px; margin: auto; background: var(--c); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--p); margin-bottom: 20px; padding-bottom: 10px; }
+h1 { color: var(--p); font-size: 22px; margin: 0; }
+#timer { font-weight: bold; color: #e74c3c; background: #fff; padding: 5px 10px; border-radius: 10px; border: 1px solid #e74c3c; }
+.pergunta { margin-bottom: 15px; padding: 15px; border-radius: 8px; background: #fafafa; border: 1px solid #ddd; }
+.pergunta p { font-weight: bold; color: #2c3e50; margin-top: 0; }
+label { display: block; padding: 10px; margin: 5px 0; cursor: pointer; border-radius: 4px; border: 1px solid transparent; background: #eee; }
+label:hover { background: #e1bee7; }
+.btn { width: 100%; padding: 15px; background: var(--p); color: #fff; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
+#resultado { margin-top: 20px; padding: 15px; background: #d4edda; color: #155724; border-radius: 8px; display: none; text-align: center; }
+table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+th, td { padding: 10px; border: 1px solid #eee; text-align: left; }
+th { background: var(--p); color: #fff; }
+input[type="text"] { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+</style>
 </head>
 <body>
-
 <div class="container">
     <header>
         <h1>Simulado LPI</h1>
         <div id="timer">10:00</div>
     </header>
-    
     <div id="identificacao">
-        <label>Seu Nome (Obrigatório):</label>
-        <input type="text" id="nomeUsuario" placeholder="Digite seu nome para validar o resultado...">
+        <label style="background:none; padding:0; font-weight:bold;">Seu Nome:</label>
+        <input type="text" id="nomeUsuario" placeholder="Digite seu nome...">
     </div>
-
-    <div id="quiz-container">Carregando perguntas do servidor...</div>
-    
+    <div id="quiz-container">Carregando questões...</div>
     <button class="btn" id="btnFinalizar" onclick="finalizarQuiz()">Finalizar Simulado</button>
     <div id="resultado"></div>
-
     <div class="ranking">
-        <h3>🏆 Melhores Pontuações Consolidadas</h3>
+        <h3>🏆 Ranking</h3>
         <table id="tabelaRanking">
-            <thead><tr><th>Nome</th><th>Pontos Totais</th></tr></thead>
-            <tbody><tr><td colspan="2">Carregando ranking...</td></tr></tbody>
+            <thead><tr><th>Nome</th><th>Pontos</th></tr></thead>
+            <tbody><tr><td colspan="2">Carregando...</td></tr></tbody>
         </table>
     </div>
 </div>
-
 <script>
-    const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwL_7_XW1WhImX-9jpJ6JJ81kQMC3dgGWShTAKkVBgugtiaj2ve81NplJDuTN1k0_uNnw/exec";
+const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwL_7_XW1WhImX-9jpJ6JJ81kQMC3dgGWShTAKkVBgugtiaj2ve81NplJDuTN1k0_uNnw/exec";
+let bancoDePerguntas = [], perguntasSorteadas = [], tempoRestante = 600, intervaloTimer;
 
-    let bancoDePerguntas = [];
-    let perguntasSorteadas = [];
-    let tempoRestante = 600;
-    let intervaloTimer;
-
-    // 1. CARREGAR PERGUNTAS DO SHEETS
-    async function carregarDadosIniciais() {
-        try {
-            const res = await fetch(URL_GOOGLE_SCRIPT + "?tipo=perguntas");
-            bancoDePerguntas = await res.json();
-            
-            // Inicia o quiz e o ranking simultaneamente
-            montarQuiz();
-            atualizarTabelaRanking();
-        } catch (e) {
-            console.error("Erro:", e);
-            document.getElementById('quiz-container').innerHTML = "Erro ao conectar com o banco de dados.";
-        }
+async function carregarDadosIniciais() {
+    try {
+        const res = await fetch(URL_GOOGLE_SCRIPT + "?tipo=perguntas");
+        bancoDePerguntas = await res.json();
+        montarQuiz();
+        atualizarTabelaRanking();
+    } catch (e) {
+        document.getElementById('quiz-container').innerHTML = "Erro ao carregar dados.";
     }
+}
 
-    // 2. MONTAR O QUIZ NA TELA
-    function montarQuiz() {
-        if (bancoDePerguntas.length === 0) return;
-        
-        // Sorteia 10 questões
-        perguntasSorteadas = bancoDePerguntas.sort(() => 0.5 - Math.random()).slice(0, 10);
-        
-        const container = document.getElementById('quiz-container');
-        container.innerHTML = "";
-        
-        perguntasSorteadas.forEach((p, index) => {
-            let html = `<div class="pergunta"><p>${index + 1}. ${p.q}</p>`;
-            p.options.forEach((opt, i) => {
-                html += `<label><input type="radio" name="p${index}" value="${i}"> ${opt}</label>`;
-            });
-            html += `</div>`;
-            container.innerHTML += html;
+function montarQuiz() {
+    if (!bancoDePerguntas.length) return;
+    perguntasSorteadas = bancoDePerguntas.sort(() => 0.5 - Math.random()).slice(0, 10);
+    const container = document.getElementById('quiz-container');
+    container.innerHTML = "";
+    perguntasSorteadas.forEach((p, index) => {
+        let html = `<div class="pergunta"><p>${index + 1}. ${p.q}</p>`;
+        p.options.forEach((opt, i) => {
+            html += `<label><input type="radio" name="p${index}" value="${i}"> ${opt}</label>`;
         });
-        iniciarTimer();
-    }
-
-    function iniciarTimer() {
-        if (intervaloTimer) clearInterval(intervaloTimer);
-        intervaloTimer = setInterval(() => {
-            let minutos = Math.floor(tempoRestante / 60);
-            let segundos = tempoRestante % 60;
-            document.getElementById('timer').innerHTML = `${minutos}:${segundos < 10 ? '0' + segundos : segundos}`;
-            if (tempoRestante <= 0) {
-                clearInterval(intervaloTimer);
-                finalizarQuiz(true);
-            }
-            tempoRestante--;
-        }, 1000);
-    }
-
-    async function finalizarQuiz(forcado = false) {
-        const inputNome = document.getElementById('nomeUsuario');
-        const nome = inputNome.value.trim();
-
-        if (!nome) {
-            alert("ERRO: Digite seu nome!");
-            inputNome.focus();
-            return;
-        }
-
-        let pontos = 0;
-        let respondidas = 0;
-
-        perguntasSorteadas.forEach((p, index) => {
-            const selecionada = document.querySelector(`input[name="p${index}"]:checked`);
-            if (selecionada) {
-                respondidas++;
-                if (parseInt(selecionada.value) === p.correct) pontos += 10;
-            }
-        });
-
-        if (!forcado && respondidas < 10) {
-            alert("Responda todas as questões!");
-            return;
-        }
-
-        clearInterval(intervaloTimer);
-        const btn = document.getElementById('btnFinalizar');
-        btn.disabled = true;
-        btn.innerText = "Enviando...";
-
-        // Salva e depois atualiza o ranking
-        await salvarNoRanking(nome, pontos);
-        
-        document.getElementById('resultado').style.display = "block";
-        document.getElementById('resultado').innerHTML = `<h3>Concluído!</h3><p><b>${nome}</b>, você fez <b>${pontos} pontos</b></p>`;
-        btn.style.display = "none";
-        document.getElementById('identificacao').style.display = "none";
-        document.getElementById('quiz-container').style.display = "none";
-    }
-
-    async function salvarNoRanking(nome, pontos) {
-        try {
-            await fetch(URL_GOOGLE_SCRIPT, {
-                method: "POST",
-                mode: "no-cors",
-                body: JSON.stringify({ nome: nome, pontos: pontos })
-            });
-            setTimeout(atualizarTabelaRanking, 1500);
-        } catch (e) { console.error(e); }
-    }
-
-    async function atualizarTabelaRanking() {
-        try {
-            const res = await fetch(URL_GOOGLE_SCRIPT);
-            const dadosBrutos = await res.json();
-            const tbody = document.querySelector('#tabelaRanking tbody');
-            tbody.innerHTML = ""; 
-
-            if (!dadosBrutos || dadosBrutos.length <= 1) {
-                tbody.innerHTML = "<tr><td colspan='2'>Sem registros.</td></tr>";
-                return;
-            }
-
-            const rankingAgrupado = {};
-            dadosBrutos.slice(1).forEach(item => { // Pula cabeçalho
-                let nomeOriginal = item[0]?.toString().trim();
-                let pontos = parseInt(item[1]) || 0;
-                if (!nomeOriginal) return;
-
-                let chave = nomeOriginal.toLowerCase();
-                if (rankingAgrupado[chave]) {
-                    rankingAgrupado[chave].pontos += pontos;
-                } else {
-                    rankingAgrupado[chave] = { nome: nomeOriginal, pontos: pontos };
-                }
-            });
-
-            Object.values(rankingAgrupado)
-                .sort((a, b) => b.pontos - a.pontos)
-                .slice(0, 10)
-                .forEach(item => {
-                    tbody.innerHTML += `<tr><td>${item.nome}</td><td>${item.pontos} pts</td></tr>`;
-                });
-        } catch (e) { console.log("Erro ranking:", e); }
-    }
-
-    // Inicialização
-    window.onload = carregarDadosIniciais;
-
-    document.getElementById('nomeUsuario').addEventListener('input', function() {
-        this.style.borderColor = "#ddd";
+        container.innerHTML += html + `</div>`;
     });
+    iniciarTimer();
+}
+
+function iniciarTimer() {
+    intervaloTimer = setInterval(() => {
+        let m = Math.floor(tempoRestante / 60), s = tempoRestante % 60;
+        document.getElementById('timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+        if (tempoRestante-- <= 0) { clearInterval(intervaloTimer); finalizarQuiz(true); }
+    }, 1000);
+}
+
+async function finalizarQuiz(forcado = false) {
+    const nome = document.getElementById('nomeUsuario').value.trim();
+    if (!nome) return alert("Digite seu nome!");
+    let pontos = 0, respondidas = 0;
+    perguntasSorteadas.forEach((p, i) => {
+        const sel = document.querySelector(`input[name="p${i}"]:checked`);
+        if (sel) { respondidas++; if (parseInt(sel.value) === p.correct) pontos += 10; }
+    });
+    if (!forcado && respondidas < 10) return alert("Responda tudo!");
+    clearInterval(intervaloTimer);
+    document.getElementById('btnFinalizar').disabled = true;
+    await fetch(URL_GOOGLE_SCRIPT, { method: "POST", mode: "no-cors", body: JSON.stringify({ nome, pontos }) });
+    document.getElementById('resultado').style.display = "block";
+    document.getElementById('resultado').innerHTML = `<h3>Fim!</h3><p>${nome}: ${pontos} pts</p>`;
+    document.getElementById('quiz-container').style.display = "none";
+    setTimeout(atualizarTabelaRanking, 1000);
+}
+
+async function atualizarTabelaRanking() {
+    try {
+        const res = await fetch(URL_GOOGLE_SCRIPT), dados = await res.json();
+        const tbody = document.querySelector('#tabelaRanking tbody');
+        tbody.innerHTML = "";
+        const rank = {};
+        dados.slice(1).forEach(item => {
+            let n = item[0], p = parseInt(item[1]) || 0;
+            if (n) rank[n.toLowerCase()] = { n, p: (rank[n.toLowerCase()]?.p || 0) + p };
+        });
+        Object.values(rank).sort((a,b) => b.p - a.p).slice(0,10).forEach(i => {
+            tbody.innerHTML += `<tr><td>${i.n}</td><td>${i.p}</td></tr>`;
+        });
+    } catch (e) {}
+}
+window.onload = carregarDadosIniciais;
 </script>
 </body>
 </html>
