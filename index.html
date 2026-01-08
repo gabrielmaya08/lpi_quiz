@@ -251,17 +251,58 @@
         }
     }
 
-    async function atualizarTabelaRanking() {
+async function atualizarTabelaRanking() {
         try {
             const res = await fetch(URL_GOOGLE_SCRIPT);
             const dadosBrutos = await res.json();
             const tbody = document.querySelector('#tabelaRanking tbody');
-            tbody.innerHTML = ""; 
-
+            
             if (!dadosBrutos || dadosBrutos.length === 0) {
                 tbody.innerHTML = "<tr><td colspan='2'>Nenhuma pontuação registrada.</td></tr>";
                 return;
             }
+
+            const rankingAgrupado = {};
+
+            dadosBrutos.forEach(item => {
+                // item[0] costuma ser o Nome, item[1] costuma ser o Ponto
+                if (item && item.length >= 2) {
+                    let nomeOriginal = item[0].toString().trim();
+                    
+                    // Tentamos pegar os pontos da coluna 2, se não for número, tentamos a coluna 3
+                    // Isso evita erro caso você tenha inserido uma coluna de Data na planilha
+                    let pontos = parseInt(item[1]);
+                    if (isNaN(pontos)) pontos = parseInt(item[2]) || 0;
+
+                    let chave = nomeOriginal.toLowerCase();
+
+                    if (chave !== "") { // Ignora linhas vazias
+                        if (rankingAgrupado[chave]) {
+                            rankingAgrupado[chave].pontos += pontos;
+                        } else {
+                            rankingAgrupado[chave] = { nome: nomeOriginal, pontos: pontos };
+                        }
+                    }
+                }
+            });
+
+            const rankingFinal = Object.values(rankingAgrupado);
+            
+            // Ordena do maior para o menor
+            rankingFinal.sort((a, b) => b.pontos - a.pontos);
+
+            // Limpa e desenha a tabela
+            tbody.innerHTML = ""; 
+            rankingFinal.slice(0, 10).forEach(item => {
+                tbody.innerHTML += `<tr><td>${item.nome}</td><td>${item.pontos} pts</td></tr>`;
+            });
+
+        } catch (e) { 
+            console.log("Erro ao carregar ranking:", e);
+            const tbody = document.querySelector('#tabelaRanking tbody');
+            tbody.innerHTML = "<tr><td colspan='2'>Erro ao atualizar ranking.</td></tr>";
+        }
+    }
 
             const rankingAgrupado = {};
             dadosBrutos.forEach(item => {
