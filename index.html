@@ -192,24 +192,45 @@
         atualizarTabelaRanking();
     }
 
-    async function finalizarQuiz(forcado = false) {
-        const nomeOriginal = document.getElementById('nomeUsuario').value.trim();
-        const nome = nomeOriginal || "Anônimo";
-        let pontos = 0;
-        let respondidas = 0;
+async function finalizarQuiz(forcado = false) {
+    const nomeInput = document.getElementById('nomeUsuario');
+    const nome = nomeInput.value.trim();
 
-        perguntasSorteadas.forEach((p, index) => {
-            const selecionada = document.querySelector(`input[name="p${index}"]:checked`);
-            if (selecionada) {
-                respondidas++;
-                if (parseInt(selecionada.value) === p.correct) pontos += 10;
-            }
-        });
+    // Validação de nome obrigatório
+    if (!nome) {
+        alert("Por favor, digite seu nome antes de finalizar o simulado!");
+        nomeInput.focus(); // Coloca o cursor no campo de nome
+        nomeInput.style.borderColor = "red"; // Destaque visual de erro
+        return;
+    }
 
-        if (!forcado && respondidas < 10) {
-            alert("Por favor, responda todas as questões!");
-            return;
+    let pontos = 0;
+    let respondidas = 0;
+
+    perguntasSorteadas.forEach((p, index) => {
+        const selecionada = document.querySelector(`input[name="p${index}"]:checked`);
+        if (selecionada) {
+            respondidas++;
+            if (parseInt(selecionada.value) === p.correct) pontos += 10;
         }
+    });
+
+    if (!forcado && respondidas < 10) {
+        alert("Por favor, responda todas as questões!");
+        return;
+    }
+
+    clearInterval(intervaloTimer);
+    const btn = document.getElementById('btnFinalizar');
+    btn.disabled = true;
+    btn.innerText = "Salvando...";
+
+    await salvarNoRanking(nome, pontos);
+    
+    document.getElementById('resultado').style.display = "block";
+    document.getElementById('resultado').innerHTML = `<h3>Fim!</h3><p>${nome}, sua nota: ${pontos} pts</p>`;
+    btn.style.display = "none";
+}
 
         clearInterval(intervaloTimer);
         const btn = document.getElementById('btnFinalizar');
