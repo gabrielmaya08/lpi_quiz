@@ -1,301 +1,298 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz LPI - Simulado</title>
-    <style>
-        :root { --cor-primaria: #8e44ad; --cor-fundo: #f3e5f5; --cor-card: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--cor-fundo); padding: 20px; margin: 0; }
-        .container { max-width: 800px; margin: auto; background: var(--cor-card); padding: 30px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--cor-primaria); margin-bottom: 20px; padding-bottom: 10px; }
-        h1 { color: var(--cor-primaria); margin: 0; font-size: 24px; }
-        #timer { font-size: 20px; font-weight: bold; color: #e74c3c; background: #ffebee; padding: 5px 15px; border-radius: 20px; border: 2px solid #e74c3c; }
-        .pergunta { margin-bottom: 20px; padding: 15px; border-radius: 8px; background: #fdfbff; border: 1px solid #e1bee7; }
-        .pergunta p { font-weight: bold; margin-bottom: 12px; color: #4a148c; }
-        label { display: block; margin-bottom: 10px; cursor: pointer; padding: 8px; border-radius: 5px; }
-        label:hover { background-color: #f3e5f5; }
-        .btn { width: 100%; padding: 15px; background: var(--cor-primaria); color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
-        .btn:disabled { background: #ccc; cursor: not-allowed; }
-        #resultado { margin-top: 20px; padding: 20px; text-align: center; font-size: 22px; border-radius: 10px; display: none; background: #e8f5e9; color: #2e7d32; }
-        .ranking { margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px; border: 1px solid #eee; text-align: left; }
-        th { background-color: var(--cor-primaria); color: white; }
-        input[type="text"] { width: 100%; padding: 12px; margin-bottom: 20px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; transition: 0.3s; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz LPI - Simulado</title>
+    <style>
+        :root { --cor-primaria: #8e44ad; --cor-fundo: #f3e5f5; --cor-card: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--cor-fundo); padding: 20px; margin: 0; }
+        .container { max-width: 800px; margin: auto; background: var(--cor-card); padding: 30px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--cor-primaria); margin-bottom: 20px; padding-bottom: 10px; }
+        h1 { color: var(--cor-primaria); margin: 0; font-size: 24px; }
+        #timer { font-size: 20px; font-weight: bold; color: #e74c3c; background: #ffebee; padding: 5px 15px; border-radius: 20px; border: 2px solid #e74c3c; }
+        .pergunta { margin-bottom: 20px; padding: 15px; border-radius: 8px; background: #fdfbff; border: 1px solid #e1bee7; }
+        .pergunta p { font-weight: bold; margin-bottom: 12px; color: #4a148c; }
+        label { display: block; margin-bottom: 10px; cursor: pointer; padding: 8px; border-radius: 5px; }
+        label:hover { background-color: #f3e5f5; }
+        .btn { width: 100%; padding: 15px; background: var(--cor-primaria); color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        #resultado { margin-top: 20px; padding: 20px; text-align: center; font-size: 22px; border-radius: 10px; display: none; }
+        .ranking { margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; border: 1px solid #eee; text-align: left; }
+        th { background-color: var(--cor-primaria); color: white; }
+        input[type="text"] { width: 100%; padding: 12px; margin-bottom: 20px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+    </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <h1>Simulado LPI</h1>
-        <div id="timer">10:00</div>
-    </header>
-    
-    <div id="identificacao">
-        <label>Seu Nome (Obrigatório):</label>
-        <input type="text" id="nomeUsuario" placeholder="Digite seu nome para validar o resultado...">
-    </div>
+    <header>
+        <h1>Simulado LPI</h1>
+        <div id="timer">10:00</div>
+    </header>
+    
+    <div id="identificacao">
+        <label>Nome:</label>
+        <input type="text" id="nomeUsuario" placeholder="Digite seu nome para começar...">
+    </div>
 
-    <div id="quiz-container"></div>
-    
-    <button class="btn" id="btnFinalizar" onclick="finalizarQuiz()">Finalizar Simulado</button>
-    <div id="resultado"></div>
+    <div id="quiz-container"></div>
+    
+    <button class="btn" id="btnFinalizar" onclick="finalizarQuiz()">Finalizar Simulado</button>
+    <div id="resultado"></div>
 
-    <div class="ranking">
-        <h3>🏆 Melhores Pontuações Consolidadas</h3>
-        <table id="tabelaRanking">
-            <thead><tr><th>Nome</th><th>Pontos Totais</th></tr></thead>
-            <tbody><tr><td colspan="2">Carregando ranking...</td></tr></tbody>
-        </table>
-    </div>
+    <div class="ranking">
+        <h3>🏆 Melhores Pontuações </h3>
+        <table id="tabelaRanking">
+            <thead><tr><th>Nome</th><th>Pontos</th></tr></thead>
+            <tbody><tr><td colspan="2">Carregando ranking...</td></tr></tbody>
+        </table>
+    </div>
 </div>
 
 <script>
-    const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwL_7_XW1WhImX-9jpJ6JJ81kQMC3dgGWShTAKkVBgugtiaj2ve81NplJDuTN1k0_uNnw/exec";
+    const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwL_7_XW1WhImX-9jpJ6JJ81kQMC3dgGWShTAKkVBgugtiaj2ve81NplJDuTN1k0_uNnw/exec";
 
-    const bancoDePerguntas = [
-        { q: "Qual comando exibe o diretório atual?", options: ["ls", "pwd", "cd", "dir"], correct: 1 },
-        { q: "Qual diretório contém arquivos essenciais do sistema?", options: ["/home", "/opt", "/etc", "/var"], correct: 2 },
-        { q: "Qual comando lista processos ativos?", options: ["top", "ls", "free", "df"], correct: 0 },
-        { q: "Para criar um diretório usamos o comando:", options: ["rm", "mkdir", "rmdir", "touch"], correct: 1 },
-        { q: "Qual arquivo armazena contas de usuários?", options: ["/etc/shadow", "/etc/passwd", "/etc/group", "/etc/login"], correct: 1 },
-        { q: "O que o comando `chmod 755` faz?", options: ["Só leitura", "RWX dono e RX outros", "Remove execução", "RWX todos"], correct: 1 },
-        { q: "Qual comando altera proprietário?", options: ["chmod", "chown", "chgrp", "usermod"], correct: 1 },
-        { q: "Qual comando move arquivos?", options: ["cp", "mv", "rm", "touch"], correct: 1 },
-        { q: "Qual diretório guarda logs do sistema?", options: ["/bin", "/var/log", "/srv", "/opt"], correct: 1 },
-        { q: "Qual comando mostra uso de disco?", options: ["free", "top", "df -h", "uname -a"], correct: 2 },
-        { q: "O que significa o comando `sudo`?", options: ["Executar como root", "Ver permissões", "Criar usuário", "Sair do terminal"], correct: 0 },
-        { q: "Qual o diretório inicial do root?", options: ["/home/root", "/root", "/system", "/admin"], correct: 1 },
-        { q: "Qual comando apaga arquivo?", options: ["rm", "erase", "del", "clear"], correct: 0 },
-        { q: "Qual serviço gerencia inicialização moderna?", options: ["sysvinit", "init.d", "systemd", "rc.local"], correct: 2 },
-        { q: "Qual comando vê IP da máquina?", options: ["ip addr", "lsnet", "netip", "getip"], correct: 0 },
-        { q: "Qual porta padrão do SSH?", options: ["22", "80", "21", "443"], correct: 0 },
-        { q: "Qual arquivo contém DNS configurado?", options: ["resolv.conf", "hosts.conf", "dns.cfg", "net.conf"], correct: 0 },
-        { q: "O que faz `ping`?", options: ["Testa DNS", "Testa conectividade ICMP", "Lista processos", "Mostra portas"], correct: 1 },
-        { q: "Qual comando compacta arquivos em .tar.gz?", options: ["zip", "gzip", "tar czf", "pack"], correct: 2 },
-        { q: "Qual comando procura texto em arquivos?", options: ["findtxt", "search", "grep", "cat -f"], correct: 2 },
-        { q: "O que faz `cat /etc/passwd`?", options: ["Edita usuários", "Mostra lista de usuários", "Deleta contas", "Reinicia sistema"], correct: 1 },
-        { q: "Dono, grupo e outros definem:", options: ["políticas", "permissões", "serviços", "boot"], correct: 1 },
-        { q: "`chmod +x` adiciona:", options: ["leitura", "execução", "escrita", "nenhuma"], correct: 1 },
-        { q: "`ls -l` mostra:", options: ["permissões e donos", "só arquivos", "só ocultos", "só diretórios"], correct: 0 },
-        { q: "`/bin` contém:", options: ["libs", "comandos essenciais", "configs", "logs"], correct: 1 },
-        { q: "`/home` contém:", options: ["logs", "configs", "usuários", "root"], correct: 2 },
-        { q: "`/etc/shadow` contém:", options: ["senhas", "rede", "timezone", "bootloader"], correct: 0 },
-        { q: "`man ls` faz:", options: ["apaga arquivos", "mostra manual", "lista diretórios", "configura serviço"], correct: 1 },
-        { q: "Qual comando reinicia o sistema?", options: ["stop", "reload", "reboot", "shutdown -c"], correct: 2 },
-        { q: "`ps aux` lista:", options: ["só processos do usuário", "só root", "todos processos", "diretórios"], correct: 2 },
-        { q: "`kill PID` faz:", options: ["cria processo", "mata processo", "pausa serviço", "finaliza sessão"], correct: 1 },
-        { q: "Kernel é:", options: ["interface gráfica", "núcleo do SO", "BIOS", "aplicativo"], correct: 1 },
-        { q: "`df -h` mostra:", options: ["memória RAM", "uso de CPU", "discos", "permissões"], correct: 2 },
-        { q: "Número 644 em chmod é:", options: ["RW dono e R outros", "RWX todos", "RX todos", "RWX dono"], correct: 0 },
-        { q: "Sinal SIGKILL é o número:", options: ["1", "9", "15", "0"], correct: 1 },
-        { q: "`/var` contém:", options: ["logs e dados variáveis", "config root", "libs", "scripts"], correct: 0 },
-        { q: "Comando para alterar senha:", options: ["pass", "passwd", "pwd -p", "userpass"], correct: 1 },
-        { q: "`uname -a` mostra:", options: ["logs", "versão kernel", "usuários", "processos"], correct: 1 },
-        { q: "`/usr/bin` contém:", options: ["binários essenciais", "binários de usuários", "arquivos root", "libs"], correct: 1 },
-        { q: "Quem usa `apt install`?", options: ["Debian", "CentOS", "Fedora", "Arch"], correct: 0 },
-        { q: "Qual comando instala pacote no Red Hat?", options: ["apt", "yum/dnf", "pacman", "rpm-get"], correct: 1 },
-        { q: "Para ver serviços no systemd:", options: ["sysctrl", "service list", "systemctl", "initd"], correct: 2 },
-        { q: "O que faz `tail -f`?", options: ["mostra início", "mostra final contínuo", "lista tudo", "apaga"], correct: 1 },
-        { q: "Arquivo `/etc/hosts`:", options: ["guarda hostnames locais", "DNS público", "interfaces", "rotas"], correct: 0 },
-        { q: "`ssh user@IP`:", options: ["copia arquivo", "abre conexão remota shell", "reinicia rede", "lista usuários"], correct: 1 },
-        { q: "Porta 80 é usada por:", options: ["FTP", "HTTP", "SSH", "DHCP"], correct: 1 },
-        { q: "Porta 53:", options: ["DNS", "SSH", "FTP", "HTTPS"], correct: 0 },
-        { q: "O comando `su -`:", options: ["muda usuário", "mostra permissões", "cria root", "renomeia usuário"], correct: 0 },
-        { q: "Extensão `.sh` significa:", options: ["script shell", "arquivo texto", "binário", "kernel"], correct: 0 },
-        { q: "Comando para editar arquivos:", options: ["edit", "nano/vi", "open", "change"], correct: 1 },
-        { q: "`/boot` contém:", options: ["arquivos do kernel", "scripts", "logs", "usuários"], correct: 0 },
-        { q: "O que é swap?", options: ["espaço RAM virtual", "rede", "log", "driver"], correct: 0 },
-        { q: "Comando para criar arquivo vazio:", options: ["rm", "mkfile", "touch", "cat"], correct: 2 },
-        { q: "`crontab -e`:", options: ["edita agendamentos", "mostra logs", "reinicia cron", "apaga jobs"], correct: 0 },
-        { q: "Expressão `*/5 * * * *`:", options: ["roda a cada 5 horas", "a cada 5 minutos", "a cada 5 dias", "diariamente"], correct: 1 },
-        { q: "Comando para copiar:", options: ["rm", "cp", "mv", "copyfile"], correct: 1 },
-        { q: "Comando para ver hardware:", options: ["hwinfo", "lshw", "free", "uname"], correct: 1 },
-        { q: "`/dev` contém:", options: ["drivers", "dispositivos", "scripts", "logs"], correct: 1 },
-        { q: "Processo init tem PID:", options: ["0", "1", "100", "10"], correct: 1 },
-        { q: "Script começa com:", options: ["<run>", "#!/bin/bash", "exec sh", "shell:"], correct: 1 },
-        { q: "Comando para contar linhas:", options: ["count", "wc -l", "linecount", "txtwc"], correct: 1 },
-        { q: "`grep -i`:", options: ["busca case-insensitive", "busca recursiva", "busca regex", "mostra arquivos"], correct: 0 },
-        { q: "`grep -r`:", options: ["recursivo", "ignora case", "busca simples", "busca regex"], correct: 0 },
-        { q: "O que faz `chmod 600`?", options: ["só root lê", "só dono lê/escreve", "acesso total", "nenhum acesso"], correct: 1 },
-        { q: "`/opt` contém:", options: ["pacotes opcionais", "logs", "kernel", "scripts"], correct: 0 },
-        { q: "Variável $HOME contém:", options: ["raiz", "diretório do usuário", "binários", "serviços"], correct: 1 },
-        { q: "`echo $PATH` mostra:", options: ["redes", "variáveis", "caminhos executáveis", "processos"], correct: 2 },
-        { q: "`hostname`:", options: ["muda nome", "exibe nome da máquina", "exibe IP", "reinicia rede"], correct: 1 },
-        { q: "`/sbin` contém:", options: ["binários administrativos", "pacotes de usuário", "logs", "drivers"], correct: 0 },
-        { q: "`ping -c 4`:", options: ["4 pings", "ping com contador CPU", "ping com cache", "ping em porta 4"], correct: 0 },
-        { q: "`ifconfig` pertence ao pacote:", options: ["net-tools", "iputils", "openssh", "kernel-dev"], correct: 0 },
-        { q: "`chmod o-r` remove:", options: ["leitura do dono", "leitura do grupo", "leitura de outros", "execução"], correct: 2 },
-        { q: "`/proc` contém:", options: ["processos", "drivers", "logs", "pacotes"], correct: 0 },
-        { q: "`mount` serve para:", options: ["montar sistemas de arquivos", "iniciar kernel", "copiar arquivos", "criar discos"], correct: 0 },
-        { q: "Linha `UUID=xxx` em `/etc/fstab`:", options: ["define rede", "define disco", "define usuário", "define firewall"], correct: 1 },
-        { q: "Porta 443:", options: ["HTTP", "HTTPS", "FTP", "SSH"], correct: 1 },
-        { q: "Porta 25:", options: ["SMTP", "HTTP", "DNS", "SNMP"], correct: 0 },
-        { q: "`scp` serve para:", options: ["copiar via SSH", "copiar local", "apagar", "monitorar"], correct: 0 },
-        { q: "O comando `history`:", options: ["limpa terminal", "lista histórico", "lista arquivos", "limpa cache"], correct: 1 },
-        { q: "`chmod` trabalha com:", options: ["diretórios", "permissões", "usuários", "memória"], correct: 1 },
-        { q: "`free -h` mostra:", options: ["discos", "memória RAM", "usuários", "CPU"], correct: 1 },
-        { q: "`/tmp` contém:", options: ["logs", "temporários", "scripts", "home"], correct: 1 },
-        { q: "Qual comando mostra rotas?", options: ["ifconfig -r", "route/ip route", "ip -g", "netstatdns"], correct: 1 },
-        { q: "`netstat -tlnp` mostra:", options: ["portas abertas", "DNS", "histórico", "processos mortos"], correct: 0 },
-        { q: "`dig` serve para:", options: ["ping", "traceroute", "consulta DNS", "listar IP"], correct: 2 },
-        { q: "`traceroute` mostra:", options: ["usuários", "caminho até destino", "permissões", "discos"], correct: 1 },
-        { q: "`chmod g+w`:", options: ["adiciona escrita ao grupo", "dono", "outros", "remove escrita"], correct: 0 },
-        { q: "`/lib` contém:", options: ["bibliotecas", "logs", "scripts", "binários"], correct: 0 },
-        { q: "`useradd`:", options: ["cria usuário", "apaga usuário", "muda senha", "lista grupos"], correct: 0 },
-        { q: "`groupadd`:", options: ["apaga usuário", "cria grupo", "cria senha", "cria root"], correct: 1 },
-        { q: "pasta `/run` guarda:", options: ["serviços ativos", "usuários", "DNS", "cron"], correct: 0 },
-        { q: "`id usuario` mostra:", options: ["permissões", "uid/gid", "cpu", "rede"], correct: 1 },
-        { q: "`/etc/fstab`:", options: ["monta arquivos", "rede", "swap", "processos"], correct: 0 },
-        { q: "`rm -r`:", options: ["remove recursivo", "remove logs", "remove pasta boot", "remove apenas arquivos"], correct: 0 },
-        { q: "`/srv` contém:", options: ["dados de serviços", "scripts", "tmp", "rede"], correct: 0 },
-        { q: "`curl` faz:", options: ["requisições web", "edita arquivos", "backup", "criptografia"], correct: 0 },
-        { q: "`wget`:", options: ["browser CLI", "editor", "gerenciador", "leitor"], correct: 0 },
-        { q: "`chmod 777`:", options: ["libera tudo", "bloqueia tudo", "só root acessa", "só dono acessa"], correct: 0 },
-        { q: "`ip link`:", options: ["configura interface", "lista processos", "usa DNS", "lista discos"], correct: 0 },
-        { q: "`systemctl status`:", options: ["status de serviço", "instala pacote", "cria job", "atualiza disco"], correct: 0 }
-    ];
+    // O banco de perguntas permanece o mesmo...
+    const bancoDePerguntas = [
+        { q: "Qual comando exibe o diretório atual?", options: ["ls", "pwd", "cd", "dir"], correct: 1 },
+        { q: "Qual diretório contém arquivos essenciais do sistema?", options: ["/home", "/opt", "/etc", "/var"], correct: 2 },
+        { q: "Qual comando lista processos ativos?", options: ["top", "ls", "free", "df"], correct: 0 },
+        { q: "Para criar um diretório usamos o comando:", options: ["rm", "mkdir", "rmdir", "touch"], correct: 1 },
+        { q: "Qual arquivo armazena contas de usuários?", options: ["/etc/shadow", "/etc/passwd", "/etc/group", "/etc/login"], correct: 1 },
+        { q: "O que o comando `chmod 755` faz?", options: ["Só leitura", "RWX dono e RX outros", "Remove execução", "RWX todos"], correct: 1 },
+        { q: "Qual comando altera proprietário?", options: ["chmod", "chown", "chgrp", "usermod"], correct: 1 },
+        { q: "Qual comando move arquivos?", options: ["cp", "mv", "rm", "touch"], correct: 1 },
+        { q: "Qual diretório guarda logs do sistema?", options: ["/bin", "/var/log", "/srv", "/opt"], correct: 1 },
+        { q: "Qual comando mostra uso de disco?", options: ["free", "top", "df -h", "uname -a"], correct: 2 },
+        { q: "O que significa o comando `sudo`?", options: ["Executar como root", "Ver permissões", "Criar usuário", "Sair do terminal"], correct: 0 },
+        { q: "Qual o diretório inicial do root?", options: ["/home/root", "/root", "/system", "/admin"], correct: 1 },
+        { q: "Qual comando apaga arquivo?", options: ["rm", "erase", "del", "clear"], correct: 0 },
+        { q: "Qual serviço gerencia inicialização moderna?", options: ["sysvinit", "init.d", "systemd", "rc.local"], correct: 2 },
+        { q: "Qual comando vê IP da máquina?", options: ["ip addr", "lsnet", "netip", "getip"], correct: 0 },
+        { q: "Qual porta padrão do SSH?", options: ["22", "80", "21", "443"], correct: 0 },
+        { q: "Qual arquivo contém DNS configurado?", options: ["resolv.conf", "hosts.conf", "dns.cfg", "net.conf"], correct: 0 },
+        { q: "O que faz `ping`?", options: ["Testa DNS", "Testa conectividade ICMP", "Lista processos", "Mostra portas"], correct: 1 },
+        { q: "Qual comando compacta arquivos em .tar.gz?", options: ["zip", "gzip", "tar czf", "pack"], correct: 2 },
+        { q: "Qual comando procura texto em arquivos?", options: ["findtxt", "search", "grep", "cat -f"], correct: 2 },
+        { q: "O que faz `cat /etc/passwd`?", options: ["Edita usuários", "Mostra lista de usuários", "Deleta contas", "Reinicia sistema"], correct: 1 },
+        { q: "Dono, grupo e outros definem:", options: ["políticas", "permissões", "serviços", "boot"], correct: 1 },
+        { q: "`chmod +x` adiciona:", options: ["leitura", "execução", "escrita", "nenhuma"], correct: 1 },
+        { q: "`ls -l` mostra:", options: ["permissões e donos", "só arquivos", "só ocultos", "só diretórios"], correct: 0 },
+        { q: "`/bin` contém:", options: ["libs", "comandos essenciais", "configs", "logs"], correct: 1 },
+        { q: "`/home` contém:", options: ["logs", "configs", "usuários", "root"], correct: 2 },
+        { q: "`/etc/shadow` contém:", options: ["senhas", "rede", "timezone", "bootloader"], correct: 0 },
+        { q: "`man ls` faz:", options: ["apaga arquivos", "mostra manual", "lista diretórios", "configura serviço"], correct: 1 },
+        { q: "Qual comando reinicia o sistema?", options: ["stop", "reload", "reboot", "shutdown -c"], correct: 2 },
+        { q: "`ps aux` lista:", options: ["só processos do usuário", "só root", "todos processos", "diretórios"], correct: 2 },
+        { q: "`kill PID` faz:", options: ["cria processo", "mata processo", "pausa serviço", "finaliza sessão"], correct: 1 },
+        { q: "Kernel é:", options: ["interface gráfica", "núcleo do SO", "BIOS", "aplicativo"], correct: 1 },
+        { q: "`df -h` mostra:", options: ["memória RAM", "uso de CPU", "discos", "permissões"], correct: 2 },
+        { q: "Número 644 em chmod é:", options: ["RW dono e R outros", "RWX todos", "RX todos", "RWX dono"], correct: 0 },
+        { q: "Sinal SIGKILL é o número:", options: ["1", "9", "15", "0"], correct: 1 },
+        { q: "`/var` contém:", options: ["logs e dados variáveis", "config root", "libs", "scripts"], correct: 0 },
+        { q: "Comando para alterar senha:", options: ["pass", "passwd", "pwd -p", "userpass"], correct: 1 },
+        { q: "`uname -a` mostra:", options: ["logs", "versão kernel", "usuários", "processos"], correct: 1 },
+        { q: "`/usr/bin` contém:", options: ["binários essenciais", "binários de usuários", "arquivos root", "libs"], correct: 1 },
+        { q: "Quem usa `apt install`?", options: ["Debian", "CentOS", "Fedora", "Arch"], correct: 0 },
+        { q: "Qual comando instala pacote no Red Hat?", options: ["apt", "yum/dnf", "pacman", "rpm-get"], correct: 1 },
+        { q: "Para ver serviços no systemd:", options: ["sysctrl", "service list", "systemctl", "initd"], correct: 2 },
+        { q: "O que faz `tail -f`?", options: ["mostra início", "mostra final contínuo", "lista tudo", "apaga"], correct: 1 },
+        { q: "Arquivo `/etc/hosts`:", options: ["guarda hostnames locais", "DNS público", "interfaces", "rotas"], correct: 0 },
+        { q: "`ssh user@IP`:", options: ["copia arquivo", "abre conexão remota shell", "reinicia rede", "lista usuários"], correct: 1 },
+        { q: "Porta 80 é usada por:", options: ["FTP", "HTTP", "SSH", "DHCP"], correct: 1 },
+        { q: "Porta 53:", options: ["DNS", "SSH", "FTP", "HTTPS"], correct: 0 },
+        { q: "O comando `su -`:", options: ["muda usuário", "mostra permissões", "cria root", "renomeia usuário"], correct: 0 },
+        { q: "Extensão `.sh` significa:", options: ["script shell", "arquivo texto", "binário", "kernel"], correct: 0 },
+        { q: "Comando para editar arquivos:", options: ["edit", "nano/vi", "open", "change"], correct: 1 },
+        { q: "`/boot` contém:", options: ["arquivos do kernel", "scripts", "logs", "usuários"], correct: 0 },
+        { q: "O que é swap?", options: ["espaço RAM virtual", "rede", "log", "driver"], correct: 0 },
+        { q: "Comando para criar arquivo vazio:", options: ["rm", "mkfile", "touch", "cat"], correct: 2 },
+        { q: "`crontab -e`:", options: ["edita agendamentos", "mostra logs", "reinicia cron", "apaga jobs"], correct: 0 },
+        { q: "Expressão `*/5 * * * *`:", options: ["roda a cada 5 horas", "a cada 5 minutos", "a cada 5 dias", "diariamente"], correct: 1 },
+        { q: "Comando para copiar:", options: ["rm", "cp", "mv", "copyfile"], correct: 1 },
+        { q: "Comando para ver hardware:", options: ["hwinfo", "lshw", "free", "uname"], correct: 1 },
+        { q: "`/dev` contém:", options: ["drivers", "dispositivos", "scripts", "logs"], correct: 1 },
+        { q: "Processo init tem PID:", options: ["0", "1", "100", "10"], correct: 1 },
+        { q: "Script começa com:", options: ["<run>", "#!/bin/bash", "exec sh", "shell:"], correct: 1 },
+        { q: "Comando para contar linhas:", options: ["count", "wc -l", "linecount", "txtwc"], correct: 1 },
+        { q: "`grep -i`:", options: ["busca case-insensitive", "busca recursiva", "busca regex", "mostra arquivos"], correct: 0 },
+        { q: "`grep -r`:", options: ["recursivo", "ignora case", "busca simples", "busca regex"], correct: 0 },
+        { q: "O que faz `chmod 600`?", options: ["só root lê", "só dono lê/escreve", "acesso total", "nenhum acesso"], correct: 1 },
+        { q: "`/opt` contém:", options: ["pacotes opcionais", "logs", "kernel", "scripts"], correct: 0 },
+        { q: "Variável $HOME contém:", options: ["raiz", "diretório do usuário", "binários", "serviços"], correct: 1 },
+        { q: "`echo $PATH` mostra:", options: ["redes", "variáveis", "caminhos executáveis", "processos"], correct: 2 },
+        { q: "`hostname`:", options: ["muda nome", "exibe nome da máquina", "exibe IP", "reinicia rede"], correct: 1 },
+        { q: "`/sbin` contém:", options: ["binários administrativos", "pacotes de usuário", "logs", "drivers"], correct: 0 },
+        { q: "`ping -c 4`:", options: ["4 pings", "ping com contador CPU", "ping com cache", "ping em porta 4"], correct: 0 },
+        { q: "`ifconfig` pertence ao pacote:", options: ["net-tools", "iputils", "openssh", "kernel-dev"], correct: 0 },
+        { q: "`chmod o-r` remove:", options: ["leitura do dono", "leitura do grupo", "leitura de outros", "execução"], correct: 2 },
+        { q: "`/proc` contém:", options: ["processos", "drivers", "logs", "pacotes"], correct: 0 },
+        { q: "`mount` serve para:", options: ["montar sistemas de arquivos", "iniciar kernel", "copiar arquivos", "criar discos"], correct: 0 },
+        { q: "Linha `UUID=xxx` em `/etc/fstab`:", options: ["define rede", "define disco", "define usuário", "define firewall"], correct: 1 },
+        { q: "Porta 443:", options: ["HTTP", "HTTPS", "FTP", "SSH"], correct: 1 },
+        { q: "Porta 25:", options: ["SMTP", "HTTP", "DNS", "SNMP"], correct: 0 },
+        { q: "`scp` serve para:", options: ["copiar via SSH", "copiar local", "apagar", "monitorar"], correct: 0 },
+        { q: "O comando `history`:", options: ["limpa terminal", "lista histórico", "lista arquivos", "limpa cache"], correct: 1 },
+        { q: "`chmod` trabalha com:", options: ["diretórios", "permissões", "usuários", "memória"], correct: 1 },
+        { q: "`free -h` mostra:", options: ["discos", "memória RAM", "usuários", "CPU"], correct: 1 },
+        { q: "`/tmp` contém:", options: ["logs", "temporários", "scripts", "home"], correct: 1 },
+        { q: "Qual comando mostra rotas?", options: ["ifconfig -r", "route/ip route", "ip -g", "netstatdns"], correct: 1 },
+        { q: "`netstat -tlnp` mostra:", options: ["portas abertas", "DNS", "histórico", "processos mortos"], correct: 0 },
+        { q: "`dig` serve para:", options: ["ping", "traceroute", "consulta DNS", "listar IP"], correct: 2 },
+        { q: "`traceroute` mostra:", options: ["usuários", "caminho até destino", "permissões", "discos"], correct: 1 },
+        { q: "`chmod g+w`:", options: ["adiciona escrita ao grupo", "dono", "outros", "remove escrita"], correct: 0 },
+        { q: "`/lib` contém:", options: ["bibliotecas", "logs", "scripts", "binários"], correct: 0 },
+        { q: "`useradd`:", options: ["cria usuário", "apaga usuário", "muda senha", "lista grupos"], correct: 0 },
+        { q: "`groupadd`:", options: ["apaga usuário", "cria grupo", "cria senha", "cria root"], correct: 1 },
+        { q: "pasta `/run` guarda:", options: ["serviços ativos", "usuários", "DNS", "cron"], correct: 0 },
+        { q: "`id usuario` mostra:", options: ["permissões", "uid/gid", "cpu", "rede"], correct: 1 },
+        { q: "`/etc/fstab`:", options: ["monta arquivos", "rede", "swap", "processos"], correct: 0 },
+        { q: "`rm -r`:", options: ["remove recursivo", "remove logs", "remove pasta boot", "remove apenas arquivos"], correct: 0 },
+        { q: "`/srv` contém:", options: ["dados de serviços", "scripts", "tmp", "rede"], correct: 0 },
+        { q: "`curl` faz:", options: ["requisições web", "edita arquivos", "backup", "criptografia"], correct: 0 },
+        { q: "`wget`:", options: ["browser CLI", "editor", "gerenciador", "leitor"], correct: 0 },
+        { q: "`chmod 777`:", options: ["libera tudo", "bloqueia tudo", "só root acessa", "só dono acessa"], correct: 0 },
+        { q: "`ip link`:", options: ["configura interface", "lista processos", "usa DNS", "lista discos"], correct: 0 },
+        { q: "`systemctl status`:", options: ["status de serviço", "instala pacote", "cria job", "atualiza disco"], correct: 0 }
+    ];
 
-    let perguntasSorteadas = [];
-    let tempoRestante = 600;
-    let intervaloTimer;
+    let perguntasSorteadas = [];
+    let tempoRestante = 600;
+    let intervaloTimer;
 
-    function iniciarTimer() {
-        intervaloTimer = setInterval(() => {
-            let minutos = Math.floor(tempoRestante / 60);
-            let segundos = tempoRestante % 60;
-            segundos = segundos < 10 ? '0' + segundos : segundos;
-            document.getElementById('timer').innerHTML = `${minutos}:${segundos}`;
-            if (tempoRestante <= 0) {
-                clearInterval(intervaloTimer);
-                finalizarQuiz(true);
-            }
-            tempoRestante--;
-        }, 1000);
-    }
+    function iniciarTimer() {
+        intervaloTimer = setInterval(() => {
+            let minutos = Math.floor(tempoRestante / 60);
+            let segundos = tempoRestante % 60;
+            segundos = segundos < 10 ? '0' + segundos : segundos;
+            document.getElementById('timer').innerHTML = `${minutos}:${segundos}`;
+            if (tempoRestante <= 0) {
+                clearInterval(intervaloTimer);
+                finalizarQuiz(true);
+            }
+            tempoRestante--;
+        }, 1000);
+    }
 
-    function iniciarQuiz() {
-        perguntasSorteadas = bancoDePerguntas.sort(() => 0.5 - Math.random()).slice(0, 10);
-        const container = document.getElementById('quiz-container');
-        container.innerHTML = "";
-        perguntasSorteadas.forEach((p, index) => {
-            let html = `<div class="pergunta"><p>${index + 1}. ${p.q}</p>`;
-            p.options.forEach((opt, i) => {
-                html += `<label><input type="radio" name="p${index}" value="${i}"> ${opt}</label>`;
-            });
-            html += `</div>`;
-            container.innerHTML += html;
-        });
-        iniciarTimer();
-        atualizarTabelaRanking();
-    }
+    function iniciarQuiz() {
+        perguntasSorteadas = bancoDePerguntas.sort(() => 0.5 - Math.random()).slice(0, 10);
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = "";
+        perguntasSorteadas.forEach((p, index) => {
+            let html = `<div class="pergunta"><p>${index + 1}. ${p.q}</p>`;
+            p.options.forEach((opt, i) => {
+                html += `<label><input type="radio" name="p${index}" value="${i}"> ${opt}</label>`;
+            });
+            html += `</div>`;
+            container.innerHTML += html;
+        });
+        iniciarTimer();
+        atualizarTabelaRanking();
+    }
 
-    async function finalizarQuiz(forcado = false) {
-        const inputNome = document.getElementById('nomeUsuario');
-        const nome = inputNome.value.trim();
+    async function finalizarQuiz(forcado = false) {
+        const nomeOriginal = document.getElementById('nomeUsuario').value.trim();
+        const nome = nomeOriginal || "Anônimo";
+        let pontos = 0;
+        let respondidas = 0;
 
-        // VALIDAÇÃO RIGOROSA DO NOME
-        if (!nome) {
-            alert("ERRO: Você precisa digitar seu nome para salvar o simulado!");
-            inputNome.style.borderColor = "red";
-            inputNome.style.backgroundColor = "#fff0f0";
-            inputNome.focus();
-            return; // Interrompe totalmente a função aqui
-        }
+        perguntasSorteadas.forEach((p, index) => {
+            const selecionada = document.querySelector(`input[name="p${index}"]:checked`);
+            if (selecionada) {
+                respondidas++;
+                if (parseInt(selecionada.value) === p.correct) pontos += 10;
+            }
+        });
 
-        let pontos = 0;
-        let respondidas = 0;
+        if (!forcado && respondidas < 10) {
+            alert("Por favor, responda todas as questões!");
+            return;
+        }
 
-        perguntasSorteadas.forEach((p, index) => {
-            const selecionada = document.querySelector(`input[name="p${index}"]:checked`);
-            if (selecionada) {
-                respondidas++;
-                if (parseInt(selecionada.value) === p.correct) pontos += 10;
-            }
-        });
+        clearInterval(intervaloTimer);
+        const btn = document.getElementById('btnFinalizar');
+        btn.disabled = true;
+        btn.innerText = "Salvando...";
 
-        if (!forcado && respondidas < 10) {
-            alert("Por favor, responda todas as questões!");
-            return;
-        }
+        await salvarNoRanking(nome, pontos);
+        
+        document.getElementById('resultado').style.display = "block";
+        document.getElementById('resultado').innerHTML = `<h3>Fim!</h3><p>${nome}, sua nota: ${pontos} pts</p>`;
+        btn.style.display = "none";
+    }
 
-        // Se chegou aqui, o nome existe e as questões foram respondidas.
-        clearInterval(intervaloTimer);
-        const btn = document.getElementById('btnFinalizar');
-        btn.disabled = true;
-        btn.innerText = "Enviando dados...";
+    async function salvarNoRanking(nome, pontos) {
+        try {
+            const tbody = document.querySelector('#tabelaRanking tbody');
+            tbody.innerHTML = "<tr><td colspan='2'>Sincronizando dados...</td></tr>";
 
-        await salvarNoRanking(nome, pontos);
-        
-        document.getElementById('resultado').style.display = "block";
-        document.getElementById('resultado').innerHTML = `<h3>Simulado Concluído!</h3><p>Parabéns <b>${nome}</b>, sua nota foi: <b>${pontos} pontos</b></p>`;
-        btn.style.display = "none";
-        document.getElementById('identificacao').style.display = "none";
-    }
+            await fetch(URL_GOOGLE_SCRIPT, {
+                method: "POST",
+                mode: "no-cors",
+                body: JSON.stringify({ nome: nome, pontos: pontos })
+            });
+            
+            setTimeout(() => {
+                atualizarTabelaRanking();
+            }, 2500);
+        } catch (e) {
+            console.error("Erro ao salvar:", e);
+        }
+    }
 
-    async function salvarNoRanking(nome, pontos) {
-        try {
-            // Envia para o Google Sheets
-            await fetch(URL_GOOGLE_SCRIPT, {
-                method: "POST",
-                mode: "no-cors",
-                body: JSON.stringify({ nome: nome, pontos: pontos })
-            });
-            
-            // Aguarda um pouco para o Google processar e atualiza a tabela
-            setTimeout(atualizarTabelaRanking, 2000);
-        } catch (e) {
-            console.error("Erro ao salvar:", e);
-        }
-    }
+    async function atualizarTabelaRanking() {
+        try {
+            const res = await fetch(URL_GOOGLE_SCRIPT);
+            const dadosBrutos = await res.json();
+            const tbody = document.querySelector('#tabelaRanking tbody');
+            
+            tbody.innerHTML = ""; 
 
-    async function atualizarTabelaRanking() {
-        try {
-            const res = await fetch(URL_GOOGLE_SCRIPT);
-            const dadosBrutos = await res.json();
-            const tbody = document.querySelector('#tabelaRanking tbody');
-            tbody.innerHTML = ""; 
+            if (!dadosBrutos || dadosBrutos.length === 0) {
+                tbody.innerHTML = "<tr><td colspan='2'>Nenhuma pontuação registrada.</td></tr>";
+                return;
+            }
 
-            if (!dadosBrutos || dadosBrutos.length === 0) {
-                tbody.innerHTML = "<tr><td colspan='2'>Nenhuma pontuação registrada.</td></tr>";
-                return;
-            }
+            // --- LÓGICA DE AGRUPAMENTO TOTAL ---
+            const rankingAgrupado = {};
 
-            const rankingAgrupado = {};
-            dadosBrutos.forEach(item => {
-                if (item && item.length >= 2) {
-                    let nomeOriginal = item[0].toString().trim();
-                    let pontos = parseInt(item[1]) || 0;
-                    let chave = nomeOriginal.toLowerCase();
+            dadosBrutos.forEach(item => {
+                if (item && item.length >= 2) {
+                    let nomeOriginal = item[0].toString().trim();
+                    let pontos = parseInt(item[1]) || 0;
 
-                    if (rankingAgrupado[chave]) {
-                        rankingAgrupado[chave].pontos += pontos;
-                    } else {
-                        rankingAgrupado[chave] = { nome: nomeOriginal, pontos: pontos };
-                    }
-                }
-            });
+                    // Criamos uma chave minúscula para evitar duplicados como "Gabriel" e "gabriel"
+                    let chave = nomeOriginal.toLowerCase();
 
-            const rankingFinal = Object.values(rankingAgrupado);
-            rankingFinal.sort((a, b) => b.pontos - a.pontos);
+                    if (rankingAgrupado[chave]) {
+                        rankingAgrupado[chave].pontos += pontos;
+                    } else {
+                        // Mantemos o nome original (com maiúscula) para exibição
+                        rankingAgrupado[chave] = { nome: nomeOriginal, pontos: pontos };
+                    }
+                }
+            });
 
-            rankingFinal.slice(0, 10).forEach(item => {
-                tbody.innerHTML += `<tr><td>${item.nome}</td><td>${item.pontos} pts</td></tr>`;
-            });
-        } catch (e) { 
-            console.log("Erro ao carregar ranking:", e); 
-        }
-    }
+            // Converte o objeto de volta para array e ordena
+            const rankingFinal = Object.values(rankingAgrupado);
+            rankingFinal.sort((a, b) => b.pontos - a.pontos);
 
-    // Resetar cor do campo quando o usuário digitar
-    document.getElementById('nomeUsuario').addEventListener('input', function() {
-        this.style.borderColor = "#ddd";
-        this.style.backgroundColor = "#fff";
-    });
+            // Exibe o Top 10 consolidado
+            rankingFinal.slice(0, 10).forEach(item => {
+                tbody.innerHTML += `<tr><td>${item.nome}</td><td>${item.pontos} pts</td></tr>`;
+            });
 
-    window.onload = iniciarQuiz;
+        } catch (e) { 
+            console.log("Erro ao carregar ranking:", e); 
+        }
+    }
+
+    window.onload = iniciarQuiz;
 </script>
 </body>
 </html>
+
+
+Quero que o campo de nome seja obrigatório, para não ficar anonimo
