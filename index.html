@@ -1,159 +1,166 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quiz LPI - Simulado</title>
-<style>
-    :root { --p: #8e44ad; --f: #f3e5f5; --c: #ffffff; }
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--f); padding: 20px; margin: 0; }
-    .container { max-width: 800px; margin: auto; background: var(--c); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--p); margin-bottom: 20px; padding-bottom: 10px; }
-    h1 { color: var(--p); font-size: 22px; margin: 0; }
-    #timer { font-weight: bold; color: #e74c3c; background: #fff; padding: 5px 10px; border-radius: 10px; border: 1px solid #e74c3c; }
-    .pergunta { margin-bottom: 15px; padding: 15px; border-radius: 8px; background: #fafafa; border: 1px solid #ddd; }
-    .pergunta p { font-weight: bold; color: #2c3e50; margin-top: 0; display: block; width: 100%; }
-    label { display: block; padding: 10px; margin: 5px 0; cursor: pointer; border-radius: 4px; border: 1px solid transparent; background: #eee; transition: 0.3s; }
-    label:hover { background: #e1bee7; }
-    .btn { width: 100%; padding: 15px; background: var(--p); color: #fff; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
-    .btn:disabled { background: #ccc; cursor: not-allowed; }
-    #resultado { margin-top: 20px; padding: 15px; background: #d4edda; color: #155724; border-radius: 8px; display: none; text-align: center; }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    th, td { padding: 10px; border: 1px solid #eee; text-align: left; }
-    th { background: var(--p); color: #fff; }
-    input[type="text"] { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado LPI Essentials - 150 Questões</title>
+    <style>
+        :root { --p: #8e44ad; --f: #f3e5f5; --c: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--f); padding: 20px; margin: 0; }
+        .container { max-width: 800px; margin: auto; background: var(--c); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--p); margin-bottom: 20px; padding-bottom: 10px; }
+        #timer { font-weight: bold; color: #e74c3c; border: 1px solid #e74c3c; padding: 5px 10px; border-radius: 8px; }
+        .pergunta { margin-bottom: 20px; padding: 15px; border-radius: 8px; background: #fafafa; border: 1px solid #ddd; }
+        .pergunta p { font-weight: bold; margin-top: 0; color: #2c3e50; }
+        label { display: block; padding: 12px; margin: 8px 0; cursor: pointer; border-radius: 6px; background: #eee; transition: 0.2s; }
+        label:hover { background: #dcdde1; }
+        input[type="radio"] { margin-right: 10px; }
+        .btn { width: 100%; padding: 15px; background: var(--p); color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .btn:disabled { background: #95a5a6; }
+        input[type="text"] { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        #resultado { display: none; padding: 20px; background: #d4edda; color: #155724; border-radius: 8px; text-align: center; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; border: 1px solid #eee; text-align: left; }
+        th { background: var(--p); color: #fff; }
+    </style>
 </head>
 <body>
+
 <div class="container">
     <header>
-        <h1>Simulado LPI</h1>
+        <h1 style="color:var(--p); font-size: 20px;">Simulado LPI Essentials</h1>
         <div id="timer">10:00</div>
     </header>
+
     <div id="identificacao">
-        <label style="background:none; padding:0; font-weight:bold; color:#333;">Seu Nome:</label>
-        <input type="text" id="nomeUsuario" placeholder="Digite seu nome completo...">
+        <label style="background:none; padding:0; font-weight:bold;">Nome do Candidato:</label>
+        <input type="text" id="nomeUsuario" placeholder="Digite seu nome para o ranking...">
     </div>
-    <div id="quiz-container">Carregando questões...</div>
-    <button class="btn" id="btnFinalizar" onclick="finalizarQuiz()">Finalizar Simulado</button>
+
+    <div id="quiz-container">Carregando questões do banco de dados...</div>
+
+    <button class="btn" id="btnFinalizar" onclick="finalizarQuiz()">Enviar Respostas</button>
+
     <div id="resultado"></div>
+
     <div class="ranking">
-        <h3>🏆 Ranking Top 10</h3>
+        <h3>🏆 Top 10 Global</h3>
         <table id="tabelaRanking">
-            <thead><tr><th>Nome</th><th>Pontos</th></tr></thead>
-            <tbody><tr><td colspan="2">Carregando...</td></tr></tbody>
+            <thead><tr><th>Posição</th><th>Nome</th><th>Pontuação</th></tr></thead>
+            <tbody><tr><td colspan="3">Carregando ranking...</td></tr></tbody>
         </table>
     </div>
 </div>
 
 <script>
-// URL atualizada com redirecionamento de segurança
-const URL_BASE = "https://script.google.com/macros/s/AKfycbwL_7_XW1WhImX-9jpJ6JJ81kQMC3dgGWShTAKkVBgugtiaj2ve81NplJDuTN1k0_uNnw/exec";
-let bancoDePerguntas = [], perguntasSorteadas = [], tempoRestante = 600, intervaloTimer;
+const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbwL_7_XW1WhImX-9jpJ6JJ81kQMC3dgGWShTAKkVBgugtiaj2ve81NplJDuTN1k0_uNnw/exec";
+let bancoPerguntas = [], perguntasSorteadas = [], tempoRestante = 600, timer;
 
-async function carregarDadosIniciais() {
+async function iniciar() {
     try {
-        // Buscando perguntas
-        const resPerguntas = await fetch(`${URL_BASE}?tipo=perguntas`);
-        const data = await resPerguntas.json();
+        // Carrega Perguntas (Adicionamos timestamp para evitar cache)
+        const res = await fetch(`${URL_SCRIPT}?tipo=perguntas&t=${Date.now()}`);
+        bancoPerguntas = await res.json();
         
-        if (data.length > 0) {
-            bancoDePerguntas = data;
-            montarQuiz();
-        } else {
-            document.getElementById('quiz-container').innerHTML = "⚠️ Nenhuma pergunta encontrada na aba 'perguntas'.";
+        if (bancoPerguntas.error) {
+            document.getElementById('quiz-container').innerHTML = "❌ Erro: " + bancoPerguntas.error;
+            return;
         }
+
+        // Sorteia 10 perguntas das 150
+        perguntasSorteadas = bancoPerguntas.sort(() => 0.5 - Math.random()).slice(0, 10);
         
-        atualizarTabelaRanking();
+        exibirQuiz();
+        atualizarRanking();
+        startTimer();
     } catch (e) {
-        console.error("Erro ao carregar:", e);
         document.getElementById('quiz-container').innerHTML = "❌ Erro ao conectar com a planilha. Verifique a aba 'perguntas'.";
     }
 }
 
-function montarQuiz() {
-    if (!bancoDePerguntas.length) return;
-    // Sorteia 10 perguntas do banco de 150
-    perguntasSorteadas = bancoDePerguntas.sort(() => 0.5 - Math.random()).slice(0, 10);
-    
+function exibirQuiz() {
     const container = document.getElementById('quiz-container');
     container.innerHTML = "";
-    
-    perguntasSorteadas.forEach((p, index) => {
-        let html = `<div class="pergunta"><p>${index + 1}. ${p.q}</p>`;
-        p.options.forEach((opt, i) => {
-            if(opt) { // Só cria opção se não estiver vazia
-                html += `<label><input type="radio" name="p${index}" value="${i}"> ${opt}</label>`;
-            }
-        });
-        container.innerHTML += html + `</div>`;
+    perguntasSorteadas.forEach((p, i) => {
+        let optionsHtml = p.options.map((opt, idx) => 
+            `<label><input type="radio" name="q${i}" value="${idx}"> ${opt}</label>`
+        ).join("");
+        
+        container.innerHTML += `
+            <div class="pergunta">
+                <p>${i + 1}. ${p.q}</p>
+                ${optionsHtml}
+            </div>`;
     });
-    iniciarTimer();
 }
 
-function iniciarTimer() {
-    clearInterval(intervaloTimer);
-    intervaloTimer = setInterval(() => {
-        let m = Math.floor(tempoRestante / 60), s = tempoRestante % 60;
-        document.getElementById('timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
-        if (tempoRestante-- <= 0) { clearInterval(intervaloTimer); finalizarQuiz(true); }
+function startTimer() {
+    timer = setInterval(() => {
+        tempoRestante--;
+        let min = Math.floor(tempoRestante / 60);
+        let sec = tempoRestante % 60;
+        document.getElementById('timer').innerText = `${min}:${sec < 10 ? '0'+sec : sec}`;
+        if (tempoRestante <= 0) finalizarQuiz(true);
     }, 1000);
 }
 
-async function finalizarQuiz(forcado = false) {
+async function finalizarQuiz(automatico = false) {
     const nome = document.getElementById('nomeUsuario').value.trim();
-    if (!nome) return alert("Por favor, digite seu nome antes de finalizar!");
-    
-    let pontos = 0, respondidas = 0;
+    if (!nome) return alert("Digite seu nome para salvar o resultado!");
+
+    let pontos = 0;
     perguntasSorteadas.forEach((p, i) => {
-        const sel = document.querySelector(`input[name="p${i}"]:checked`);
-        if (sel) { 
-            respondidas++; 
-            if (parseInt(sel.value) === p.correct) pontos += 10; 
-        }
+        const sel = document.querySelector(`input[name="q${i}"]:checked`);
+        if (sel && parseInt(sel.value) === p.correct) pontos += 10;
     });
 
-    if (!forcado && respondidas < 10) {
-        if(!confirm("Você não respondeu todas as questões. Deseja finalizar assim mesmo?")) return;
-    }
-
-    clearInterval(intervaloTimer);
+    clearInterval(timer);
     document.getElementById('btnFinalizar').disabled = true;
-    document.getElementById('btnFinalizar').innerText = "Enviando pontuação...";
+    document.getElementById('btnFinalizar').innerText = "Processando...";
 
-    try {
-        await fetch(URL_BASE, { 
-            method: "POST", 
-            mode: "no-cors", 
-            body: JSON.stringify({ nome, pontos }) 
-        });
-        
-        document.getElementById('resultado').style.display = "block";
-        document.getElementById('resultado').innerHTML = `<h3>Simulado Concluído!</h3><p><strong>${nome}</strong>, você fez <strong>${pontos}</strong> pontos.</p>`;
-        document.getElementById('quiz-container').style.display = "none";
-        document.getElementById('identificacao').style.display = "none";
-        
-        setTimeout(atualizarTabelaRanking, 1500);
-    } catch (e) {
-        alert("Erro ao salvar pontuação, mas seu resultado foi: " + pontos);
-    }
+    // Enviar para o Google Sheets
+    await fetch(URL_SCRIPT, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify({ nome: nome, pontos: pontos })
+    });
+
+    document.getElementById('quiz-container').style.display = "none";
+    document.getElementById('identificacao').style.display = "none";
+    document.getElementById('btnFinalizar').style.display = "none";
+    
+    const resDiv = document.getElementById('resultado');
+    resDiv.style.display = "block";
+    resDiv.innerHTML = `<h2>Simulado Finalizado!</h2><p>${nome}, você fez <b>${pontos}</b> pontos!</p>`;
+    
+    setTimeout(atualizarRanking, 2000);
 }
 
-async function atualizarTabelaRanking() {
+async function atualizarRanking() {
     try {
-        const res = await fetch(URL_BASE);
+        const res = await fetch(`${URL_SCRIPT}?t=${Date.now()}`);
         const dados = await res.json();
-        const tbody = document.querySelector('#tabelaRanking tbody');
+        const tbody = document.querySelector("#tabelaRanking tbody");
         tbody.innerHTML = "";
-        
-        const rank = {};
-        dados.slice(1).forEach(item => {
-            let n = item[0], p = parseInt(item[1]) || 0;
-            if (n) {
-                const key = n.toLowerCase().trim();
-                if (!rank[key] || p > rank[key].p) rank[key] = { n, p };
-            }
+
+        // Organiza ranking (Pega a maior nota por nome)
+        let cleans = {};
+        dados.slice(1).forEach(r => {
+            if (!cleans[r[0]] || r[1] > cleans[r[0]]) cleans[r[0]] = r[1];
         });
 
-        Object.values(rank)
-            .sort((a,b) => b.p - a.p)
+        Object.keys(cleans)
+            .map(name => ({name, pts: cleans[name]}))
+            .sort((a, b) => b.pts - a.pts)
+            .slice(0, 10)
+            .forEach((item, idx) => {
+                tbody.innerHTML += `<tr><td>${idx+1}º</td><td>${item.name}</td><td>${item.pts}</td></tr>`;
+            });
+    } catch (e) { console.log("Erro ranking"); }
+}
+
+window.onload = iniciar;
+</script>
+
+</body>
+</html>
