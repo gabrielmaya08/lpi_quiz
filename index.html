@@ -185,19 +185,53 @@ async function atualizarRanking() {
         const tbody = document.querySelector("#tabelaRanking tbody");
         tbody.innerHTML = "";
 
-        let melhoresNotas = {};
-        dados.slice(1).forEach(r => {
-            if (!melhoresNotas[r[0]] || r[1] > melhoresNotas[r[0]]) melhoresNotas[r[0]] = r[1];
+        // 1. Objeto para acumular os pontos
+        const consolidado = {};
+
+        // 2. Processamento dos dados brutos vindos da planilha
+        dados.slice(1).forEach(linha => {
+            const nomeOriginal = linha[0];
+            const pontos = parseInt(linha[1]);
+
+            if (nomeOriginal && !isNaN(pontos)) {
+                // Tratamos "Gabriel" e "gabriel" como o mesmo ID (chave minúscula)
+                const nomeChave = nomeOriginal.toString().trim().toLowerCase();
+
+                if (consolidado[nomeChave]) {
+                    consolidado[nomeChave].pontos += pontos;
+                } else {
+                    // Armazenamos o objeto com o nome original para exibição estética
+                    consolidado[nomeChave] = {
+                        nome: nomeOriginal,
+                        pontos: pontos
+                    };
+                }
+            }
         });
 
-        Object.keys(melhoresNotas)
-            .map(n => ({n, p: melhoresNotas[n]}))
-            .sort((a, b) => b.p - a.p)
-            .slice(0, 10)
-            .forEach((item, idx) => {
-                tbody.innerHTML += `<tr><td>${idx+1}º</td><td>${item.n}</td><td>${item.p}</td></tr>`;
-            });
-    } catch (e) { console.log("Erro ao carregar ranking"); }
+        // 3. Converter o objeto em Array, Ordenar por pontos e pegar o Top 10
+        const rankingLimpo = Object.keys(consolidado)
+            .map(chave => consolidado[chave])
+            .sort((a, b) => b.pontos - a.pontos)
+            .slice(0, 10);
+
+        // 4. Renderizar na tabela
+        if (rankingLimpo.length === 0) {
+            tbody.innerHTML = "<tr><td colspan='3'>Nenhum registro encontrado.</td></tr>";
+            return;
+        }
+
+        rankingLimpo.forEach((item, idx) => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${idx + 1}º</td>
+                    <td>${item.nome}</td>
+                    <td>${item.pontos} pts</td>
+                </tr>`;
+        });
+    } catch (e) {
+        console.error("Erro ao carregar e processar ranking no Front-end:", e);
+    }
 }
 
 window.onload = iniciar;
