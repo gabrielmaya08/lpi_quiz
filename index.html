@@ -185,52 +185,55 @@ async function atualizarRanking() {
         const tbody = document.querySelector("#tabelaRanking tbody");
         tbody.innerHTML = "";
 
-        // 1. Objeto para acumular os pontos
+        // Objeto para acumular os pontos
         const consolidado = {};
 
-        // 2. Processamento dos dados brutos vindos da planilha
+        // Processamento: começa do índice 1 para pular o cabeçalho da planilha
         dados.slice(1).forEach(linha => {
-            const nomeOriginal = linha[0];
-            const pontos = parseInt(linha[1]);
+            let nomeOriginal = linha[0];
+            let pontos = parseInt(linha[1]);
 
             if (nomeOriginal && !isNaN(pontos)) {
-                // Tratamos "Gabriel" e "gabriel" como o mesmo ID (chave minúscula)
-                const nomeChave = nomeOriginal.toString().trim().toLowerCase();
+                // Remove espaços e cria uma chave em minúsculo para comparação
+                let nomeLimpo = nomeOriginal.toString().trim();
+                let chave = nomeLimpo.toLowerCase();
 
-                if (consolidado[nomeChave]) {
-                    consolidado[nomeChave].pontos += pontos;
+                if (consolidado[chave]) {
+                    consolidado[chave].pontos += pontos;
                 } else {
-                    // Armazenamos o objeto com o nome original para exibição estética
-                    consolidado[nomeChave] = {
-                        nome: nomeOriginal,
+                    // Armazena com o nome original (primeira vez que aparece)
+                    consolidado[chave] = {
+                        nome: nomeLimpo,
                         pontos: pontos
                     };
                 }
             }
         });
 
-        // 3. Converter o objeto em Array, Ordenar por pontos e pegar o Top 10
-        const rankingLimpo = Object.keys(consolidado)
+        // Transforma o objeto em array, ordena do maior para o menor e pega o Top 10
+        const rankingOrdenado = Object.keys(consolidado)
             .map(chave => consolidado[chave])
             .sort((a, b) => b.pontos - a.pontos)
             .slice(0, 10);
 
-        // 4. Renderizar na tabela
-        if (rankingLimpo.length === 0) {
-            tbody.innerHTML = "<tr><td colspan='3'>Nenhum registro encontrado.</td></tr>";
+        if (rankingOrdenado.length === 0) {
+            tbody.innerHTML = "<tr><td colspan='3'>Nenhum dado encontrado.</td></tr>";
             return;
         }
 
-        rankingLimpo.forEach((item, idx) => {
+        // Renderiza as linhas na tabela
+        rankingOrdenado.forEach((item, idx) => {
             tbody.innerHTML += `
                 <tr>
                     <td>${idx + 1}º</td>
                     <td>${item.nome}</td>
-                    <td>${item.pontos} pts</td>
+                    <td>${item.pontos}</td>
                 </tr>`;
         });
     } catch (e) {
-        console.error("Erro ao carregar e processar ranking no Front-end:", e);
+        console.error("Erro ao processar ranking:", e);
+        document.querySelector("#tabelaRanking tbody").innerHTML = 
+            "<tr><td colspan='3'>Erro ao carregar ranking.</td></tr>";
     }
 }
 
